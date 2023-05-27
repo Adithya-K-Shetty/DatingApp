@@ -1,5 +1,6 @@
 using System.Text;
 using API.Data;
+using API.Extensions;
 using API.interfaces;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,26 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(opt => 
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
-builder.Services.AddCors();
-
-//service will be there unil is controller is created and disposed
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-
-    };
-});
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
 
 
 var app = builder.Build();
@@ -41,11 +24,14 @@ var app = builder.Build();
 // app.UseHttpsRedirection();
 
 // app.UseAuthorization();
+
+/* These are the middle wares and positionong matters*/
+
 app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 
-app.UseAuthentication();
+app.UseAuthentication();  // should happen before mapping the controller
 
-app.UseAuthorization();
+app.UseAuthorization();  // should happen before mapping the controller
 
 app.MapControllers();
 
