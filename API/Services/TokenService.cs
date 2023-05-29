@@ -27,7 +27,11 @@ namespace API.Services
                 new Claim(JwtRegisteredClaimNames.NameId, user.UserName)
             };
 
+            //used to create signing creadential object
+            //to check the authenticity of token
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
+            //it is used to setup 
+            //configuration for the token
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -35,10 +39,14 @@ namespace API.Services
                 SigningCredentials = creds
             };
 
+            //generates and handles token
             var tokenHandler = new JwtSecurityTokenHandler();
-
+            //process the configuration
+            //in the token descriptor
+            //generates a new token
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
+            //converts a generated token
+            //into string format
             return tokenHandler.WriteToken(token);
         }
     }
