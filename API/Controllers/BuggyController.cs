@@ -15,13 +15,13 @@ namespace API.Controllers
             
         }
 
-        [Authorize]
+        [Authorize] //because of authorize error will be generated
         [HttpGet("auth")]
         public ActionResult<string> GetSecret()
         {
             return "secret text";
         }
-        [HttpGet("not-found")]
+        [HttpGet("not-found")] //because of wrong user id error will be generated
         public ActionResult<AppUser> GetNotFound()
         {
             var thing = _context.Users.Find(-1);
@@ -36,14 +36,14 @@ namespace API.Controllers
            
                 var thing = _context.Users.Find(-1);
 
-                var thingToReturn = thing.ToString();
+                var thingToReturn = thing.ToString(); //because of converting null to string exception will be raised
 
                 return thingToReturn;
         }
         [HttpGet("bad-request")]
         public ActionResult<string> GetBadRequest()
         {
-            return BadRequest("This was not a good request");
+            return BadRequest("This was not a goods request");
         }
     }
 }

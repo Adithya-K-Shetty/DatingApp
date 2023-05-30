@@ -10,18 +10,26 @@ import { Observable, catchError } from 'rxjs';
 import { NavigationExtras, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
+//this can be injected into other component by creating instance of this
+//reusablility
+//specifically used for services which performs network operations
+//like getting data from server etc...
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
   constructor(private router: Router, private toastr: ToastrService) {}
 
-  //used to handle various http requests
-  //instead of managing individual error status code
-  //we create a centralized error management
+  //used for cross cutting concers(common over multiple components)
+  //Interceptors can be used to centralize error handling logic for HTTP requests
+  //Interceptors can implement caching mechanisms for HTTP requests and responses
+  //They can add authentication tokens or headers to outgoing requests, intercept unauthorized responses
+  // They can intercept failed requests, perform retries with exponential backoff, or cancel requests that exceed specified time limits
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
+      //the type HttpErrorResponse defined here
+      //helps the intellisense to give suggestions
       catchError((error: HttpErrorResponse) => {
         if (error) {
           switch (error.status) {

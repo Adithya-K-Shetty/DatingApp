@@ -7,6 +7,8 @@ namespace API.Errors
 {
     public class ApiException
     {
+        //basically this will be sent as response 
+        //to the user when exception occurs
          public ApiException(int statusCode, string message, string details)
         {
             StatusCode = statusCode;
