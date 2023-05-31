@@ -7,6 +7,9 @@ namespace API.DTOs
          // [Required] :- makes the nullable property of userName false
         public string UserName { get; set; }
 
+        //this is the users main photo
+        public string PhotoUrl { get; set; }
+
         public int Age {get; set;}
 
         public string KnowAs {get; set;}
