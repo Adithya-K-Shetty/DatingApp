@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
 import { User } from '../_models/user';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,7 @@ import { User } from '../_models/user';
 //main advantage is that they are created and destroyed along with
 //the application intialization and Shutdown
 export class AccountService {
-  baseUrl = 'http://localhost:5033/api/';
+  baseUrl = environment.apiUrl;
   private currentUserSource = new BehaviorSubject<User | null>(null);
   //this oberservable is being used inside nav component
   //where it is being subscribed
