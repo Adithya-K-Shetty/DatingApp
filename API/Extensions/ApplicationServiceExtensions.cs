@@ -18,7 +18,10 @@ namespace API.Extensions
 
             //service will be there unil is controller is created and disposed
             services.AddScoped<ITokenService, TokenService>();
+            //service will be scoped to the http request
+            services.AddScoped<IUserRepository,UserRepository>();
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services;
         }
     }
