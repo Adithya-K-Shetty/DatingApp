@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
@@ -41,6 +42,22 @@ namespace API.Controllers
         {
            return await _userRepository.GetMemberAsync(username);
             
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
+        {
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //When we retrieve the user the entity frame work starts tracking that particular user
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+
+            if(user == null) return NotFound();
+
+            _mapper.Map(memberUpdateDto,user);
+
+            if(await _userRepository.SaveAllAsync()) return NoContent(); //http status code 204 which says everything is ok but nothing to return
+
+            return BadRequest("Failed To Update User");
         }
     }
 }
