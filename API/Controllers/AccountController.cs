@@ -8,6 +8,7 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,8 +18,10 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
-          public AccountController(DataContext context, ITokenService tokenService)
+        private readonly IMapper _mapper;
+          public AccountController(DataContext context, ITokenService tokenService,IMapper mapper)
           {
+            _mapper = mapper;
             _tokenService = tokenService;
             _context = context;  
             
@@ -30,15 +33,16 @@ namespace API.Controllers
           {
                 if(await UserExists(registerDto.UserName)) return BadRequest("Username Is Taken");
 
+                var user = _mapper.Map<AppUser>(registerDto);
+
                 // using bascially disposes unused class
                 using var hmac = new HMACSHA512();   //intializing instance to offer hash (it generates randomly generated key which can be used as password salt)
 
-                var user = new AppUser
-                {
-                    UserName = registerDto.UserName.ToLower(),
-                    Password = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)), //this will compute hash of the text password
-                    PasswordSalt = hmac.Key //generated new random key
-                };
+               
+                user.UserName = registerDto.UserName.ToLower();
+                user.Password = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Pass)); //this will compute hash of the text password
+                user.PasswordSalt = hmac.Key; //generated new random key
+                
 
                 _context.Users.Add(user); //just tracks new entity in memory
 
