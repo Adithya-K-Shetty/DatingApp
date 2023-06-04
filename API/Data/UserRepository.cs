@@ -1,5 +1,6 @@
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.interfaces;
 using AutoMapper;
 using AutoMapper.Execution;
@@ -27,11 +28,33 @@ namespace API.Data
                 .SingleOrDefaultAsync(); //it expcts at most one user to match the above lambda expression else return null if no matching  
         }
 
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+        public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            return await _context.Users
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            //The .AsQueryable() method is called on the Users entity set
+            //It converts the Users entity set to an IQueryable<T>
+            //interface, which allows you to construct 
+            //and execute queries against the data source using LINQ
+             var query = _context.Users.AsQueryable(); //AsNoTracking :- entity frame work wont keep track of returned items as we dont process over them in user control
+
+             query = query.Where(u => u.UserName != userParams.CurrentUsername);
+             query = query.Where(u => u.Gender == userParams.Gender);
+            
+            //older age
+             var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge-1));
+            //younger age
+            var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
+
+            query = query.Where(u=>u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+
+            query = userParams.OrderBy switch
+            {
+                //gives newest users first
+                "created" => query.OrderByDescending(u => u.Created),
+                //bydefault it will ordered based on lastActive
+                _ => query.OrderByDescending(u => u.LastActive)
+            };
+
+             return await PagedList<MemberDto>.CreateAsync(query.AsNoTracking().ProjectTo<MemberDto>(_mapper.ConfigurationProvider),userParams.PageNumber,userParams.PageSize);
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)

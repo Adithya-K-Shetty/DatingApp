@@ -51,7 +51,8 @@ namespace API.Controllers
                 return new UserDto
                 {
                     Username = user.UserName,
-                    Token = _tokenService.CreateToken(user),     
+                    Token = _tokenService.CreateToken(user),
+                    Gender = user.Gender     
                 }; // respose 
           }
 
@@ -76,7 +77,8 @@ namespace API.Controllers
                 {
                     Username = user.UserName,
                     Token = _tokenService.CreateToken(user),
-                    PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+                    PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                    Gender = user.Gender
                 };
           }
           private async Task<bool> UserExists(string username) // to check whether the user has already been registered

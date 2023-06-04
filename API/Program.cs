@@ -14,7 +14,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+// adds the controllers and related services
+//ontrollers are responsible for handling incoming HTTP requests 
+//and returning appropriate responses
 builder.Services.AddControllers();
+//these service is extended
+//and written in separate file
+//parameter :-configuring and registering application-specific services 
+//and dependencies using the provided configuration
+
+//custom extension method
+//some of the example configurations
+//services like database contexts, repositories, logging providers, 
+//third-party integrations
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 
