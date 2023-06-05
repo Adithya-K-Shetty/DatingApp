@@ -23,6 +23,7 @@ export class MembersService {
     private http: HttpClient,
     private accountService: AccountService
   ) {
+    //takes only the first emitted value from the currentUser$ observable and then completes
     this.accountService.currentUser$.pipe(take(1)).subscribe({
       next: (user) => {
         if (user) {
@@ -102,6 +103,16 @@ export class MembersService {
 
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
+  }
+
+  addLike(username: string) {
+    return this.http.post(this.baseUrl + 'likes/' + username, {});
+  }
+
+  getLikes(predicate: string) {
+    return this.http.get<Member[]>(
+      this.baseUrl + 'likes?predicate=' + predicate
+    );
   }
 
   //to pass token in the http header

@@ -21,5 +21,31 @@ namespace API.Data
         //entity in application code represent table in database
         //he DbSet provides methods to query the database using LINQ 
         public DbSet<AppUser> Users {get;set;}
+        public DbSet<UserLike> Likes {get;set;}
+
+
+        //a method defined as vitual in a class
+        //can be overrided
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<UserLike>()
+                .HasKey(k => new {k.SourceUserId,k.TargetUserId}); //represent primary key used in this table
+            
+
+            //this is for user liking many users
+            builder.Entity<UserLike>()
+                .HasOne(s => s.SourceUser)
+                .WithMany(l => l.LikedUsers)
+                .HasForeignKey(s => s.SourceUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+             builder.Entity<UserLike>()
+                .HasOne(s => s.TargetUser)
+                .WithMany(l => l.LikedByUsers)
+                .HasForeignKey(s => s.TargetUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

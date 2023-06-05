@@ -18,14 +18,14 @@ const routes: Routes = [
   {
     path: '',
     runGuardsAndResolvers: 'always',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard], //route guard interface that is used to protect a route from being accessed by unauthorized users
     children: [
       { path: 'members', component: MemberListComponent },
       { path: 'members/:username', component: MemberDetailComponent },
       {
         path: 'member/edit',
         component: MemberEditComponent,
-        canDeactivate: [PreventUnsavedChangesGuard],
+        canDeactivate: [PreventUnsavedChangesGuard], // prevent a user from navigating away from a route or component when there are unsaved changes
       },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
