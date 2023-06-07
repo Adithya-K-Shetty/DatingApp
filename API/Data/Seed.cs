@@ -3,17 +3,18 @@ using System.Text.Json;
 using API.Entities;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Data
 {
     public class Seed
     {
-        public static async Task SeedUsers(DataContext context)
+        public static async Task SeedUsers(UserManager<AppUser> userManager,RoleManager<AppRole> roleManager)
         {
             //it checks whether there is users in a database
             //if the users already present then it simply
             //returns and stops the execution
-            if (await context.Users.AnyAsync()) return;
+            if (await userManager.Users.AnyAsync()) return;
 
 
             //if we dont have any users
@@ -31,20 +32,41 @@ namespace API.Data
 
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
 
+            var roles = new List<AppRole>
+            {
+                new AppRole{Name="Member"},
+                new AppRole{Name="Admin"},
+                new AppRole{Name="Moderator"}
+            };
+
+            foreach(var role in roles)
+            {
+                await roleManager.CreateAsync(role);    
+            }
+
             //for each user we are generating password
             foreach(var user in users)
             {
-                using var hmac = new HMACSHA512();
+               
                 user.UserName = user.UserName.ToLower();
-                user.Password = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
-                user.PasswordSalt = hmac.Key;
+               
 
                 //we are adding it to entity framework tracking
-                context.Users.Add(user);
+                await userManager.CreateAsync(user,"Pa$$w0rd");
+
+                await userManager.AddToRoleAsync(user,"Member");
             }
 
+            var admin = new AppUser
+            {
+                UserName = "admin"
+            };
+
+            await userManager.CreateAsync(admin,"Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin,new[] {"Admin","Moderator"});
+
             //here we are adding data into the database
-            await context.SaveChangesAsync();
+           
         }
     }
 }

@@ -8,17 +8,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class AppUser
+    //so when we inherit IdentityUser
+    //the id defined by us will overwrite the string id property that is being inherited
+    //so we explicitly specify that id has to be integer
+    //by using <int>
+    public class AppUser : IdentityUser<int> 
     {
-        public int Id { get; set; }
-
-         // [Required] :- makes the nullable property of userName false
-        public string UserName { get; set; }
-
-        public byte[] Password {get; set;}
-
-        public byte[] PasswordSalt {get; set;}
-
+        
         public DateOnly DateOfBirth {get; set;}
 
         public string KnowAs {get; set;}
@@ -48,5 +44,7 @@ namespace API.Entities
         public List<Message> MessagesSent { get; set; }
 
         public List<Message> MessagesReceived { get; set; }
+
+         public ICollection<AppUserRole> UserRoles {get;set;}
     }
 }

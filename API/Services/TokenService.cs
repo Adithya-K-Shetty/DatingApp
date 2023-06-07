@@ -7,26 +7,34 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Entities;
 using API.interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services
 {
     public class TokenService : ITokenService
     {
+        private readonly UserManager<AppUser> _userManager;
 
         //key is used to both encrypt and decrypt the data
         private readonly SymmetricSecurityKey _key;
-        public TokenService(IConfiguration config)
+        public TokenService(IConfiguration config, UserManager<AppUser> userManager)
         {
+            _userManager = userManager;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
         }
-        public string CreateToken(AppUser user)
+        public async Task<string> CreateToken(AppUser user)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            
+            //getting just the name of the role
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             //used to create signing creadential object
             //to check the authenticity of token

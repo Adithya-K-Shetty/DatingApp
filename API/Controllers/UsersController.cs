@@ -32,6 +32,7 @@ namespace API.Controllers
             
         }
         
+
         [HttpGet]
         //[FromQuery] is used to provide a hint for the
         //API to look for the query parameters
@@ -55,6 +56,7 @@ namespace API.Controllers
            
             return Ok(users);
         }
+
         [HttpGet("{username}")]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
