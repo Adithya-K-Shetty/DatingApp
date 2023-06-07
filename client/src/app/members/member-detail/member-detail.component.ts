@@ -18,7 +18,7 @@ import { MessageService } from 'src/app/_services/message.service';
 })
 export class MemberDetailComponent implements OnInit {
   @ViewChild('memberTabs', { static: true }) memberTabs?: TabsetComponent;
-  member: Member | undefined;
+  member: Member = {} as Member;
   galleryOptions: NgxGalleryOptions[] = [];
   galleryImages: NgxGalleryImage[] = [];
   activeTab?: TabDirective;
@@ -31,7 +31,9 @@ export class MemberDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadMember();
+    this.route.data.subscribe({
+      next: (data) => (this.member = data['member']), //'member' is specified in routing module (resolve)
+    });
     this.route.queryParams.subscribe({
       next: (params) => {
         params['tab'] && this.selectTab(params['tab']);
@@ -48,6 +50,7 @@ export class MemberDetailComponent implements OnInit {
       },
     ];
 
+    this.galleryImages = this.getImages();
     //below method might be called before loadMember
     //which might return empty array
     //thats why add it in loadMember
@@ -67,19 +70,6 @@ export class MemberDetailComponent implements OnInit {
       });
     }
     return imageUrls;
-  }
-
-  loadMember() {
-    //paramMap contains an array of route parameter
-    //snapshot refers to state of route in a particular time
-    const username = this.route.snapshot.paramMap.get('username');
-    if (!username) return;
-    this.memberService.getMember(username).subscribe({
-      next: (member) => {
-        this.member = member;
-        this.galleryImages = this.getImages();
-      },
-    });
   }
 
   selectTab(heading: string) {
