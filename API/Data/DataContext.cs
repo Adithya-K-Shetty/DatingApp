@@ -28,6 +28,9 @@ namespace API.Data
 
         //a method defined as vitual in a class
         //can be overrided
+
+        /*--  implementation of a many-to-many relationship between the AppUser class
+         and itself through the UserLike class --*/
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
