@@ -5,6 +5,7 @@ using API.Extensions;
 using API.interfaces;
 using API.middleware;
 using API.Services;
+using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +53,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 
 //there is developer exceptio page here to provide more info about error
-app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
+app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200"));
 
 app.UseAuthentication();  // should happen before mapping the controller
 
@@ -61,6 +62,8 @@ app.UseAuthorization();  // should happen before mapping the controller
 
 //the appropriate controller and action method are executed when a matching request is received
 app.MapControllers();
+
+app.MapHub<PresenceHub>("hubs/presence"); //providing end point for the hub
 
 
 //provides access to all of the services defined above
