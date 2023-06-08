@@ -51,7 +51,18 @@ export class AccountService {
 
   //this method is being called from app.component.ts
   setCurrentUser(user: User) {
+    user.roles = [];
+    const roles = this.getDecodedToken(user.token).role;
+    Array.isArray(roles) ? (user.roles = roles) : user.roles.push(roles);
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
+  }
+
+  //in this method we get the roles
+  //present inside the token
+  //and based on the roles
+  //we allow access to admin (nav component)
+  getDecodedToken(token: string) {
+    return JSON.parse(atob(token.split('.')[1]));
   }
 }
