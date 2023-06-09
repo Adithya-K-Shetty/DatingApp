@@ -6,6 +6,8 @@ import { Message } from '../_models/message';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +21,11 @@ export class MessageService {
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toastr: ToastrService
+  ) {}
 
   createHubConnection(user: User, otherUsername: string) {
     this.hubConnection = new HubConnectionBuilder()
@@ -31,21 +37,33 @@ export class MessageService {
 
     this.hubConnection.start().catch((error) => console.log(error));
 
+    //receive message thread
     this.hubConnection.on('ReceiveMessageThread', (messages) => {
       this.messageThreadSource.next(messages);
     });
 
+    //this we used after sending message
     this.hubConnection.on('NewMessage', (message) => {
       this.messageThread$.pipe(take(1)).subscribe({
         next: (messages) => {
-          alert('hello');
           this.messageThreadSource.next([...messages, message]);
         },
       });
     });
+
+    this.hubConnection.on('NewMessageReceived', ({ username, knownAs }) => {
+      this.toastr
+        .info(knownAs + ' has sent you a new message! Click me to see it')
+        .onTap.pipe(take(1))
+        .subscribe({
+          next: () =>
+            this.router.navigateByUrl('/members/' + username + '?tab=Messages'),
+        });
+    });
   }
 
   stopHubConnection() {
+    //only if we have hub connection we can stop the hub connection
     if (this.hubConnection) {
       this.hubConnection.stop();
     }
@@ -67,8 +85,8 @@ export class MessageService {
     );
   }
 
+  //async gurantees that we will get promise back
   async sendMessage(username: string, content: string) {
-    console.log('Message Recieved');
     return this.hubConnection
       ?.invoke('SendMessage', { recipientUsername: username, content })
       .catch((error) => console.log(error));

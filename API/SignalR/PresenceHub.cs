@@ -26,7 +26,7 @@ namespace API.SignalR
             //getting a list of connected users
             var currentUsers = await _tracker.GetOnlineUsers();
             //sending the data of all the online users to all the users
-            await Clients.All.SendAsync("GetOnlineUsers",currentUsers);
+            await Clients.Caller.SendAsync("GetOnlineUsers",currentUsers);
 
         }
         public override async Task OnDisconnectedAsync(Exception exception)

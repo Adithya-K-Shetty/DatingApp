@@ -29,6 +29,10 @@ namespace API.Data
 
         public DbSet<Message> Messages { get; set; }
 
+        public DbSet<Group> Groups {get;set;}
+
+        public DbSet<Connection> Connections {get;set;}
+
 
         //a method defined as vitual in a class
         //can be overrided

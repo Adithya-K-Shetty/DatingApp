@@ -46,7 +46,9 @@ namespace API.Extensions
             services.AddScoped<IMessageRepository,MessageRepository>();
 
             services.AddSignalR();
+            
 
+            //this has to be present has long as the application is present
             services.AddSingleton<PresenceTracker>();
 
             return services;

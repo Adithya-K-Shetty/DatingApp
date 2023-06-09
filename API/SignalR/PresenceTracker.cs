@@ -3,7 +3,7 @@ namespace API.SignalR
     public class PresenceTracker
     {
         //first parameter is the username
-        //second parameter is the list of connection id's (one id for each of the device)
+        //second parameter is the list of connection id's (one id for each of the connection)
         private static readonly Dictionary<string,List<string>> OnlineUsers = new Dictionary<string, List<string>>();
 
         public Task UserConnected(string username, string connectionId)
@@ -43,6 +43,17 @@ namespace API.SignalR
                 onlineUsers = OnlineUsers.OrderBy(k => k.Key).Select(k =>k.Key).ToArray();
             }
             return Task.FromResult(onlineUsers);
+        }
+
+        //get connection id to send notification
+        public static Task<List<string>> GetConnectionForUser(string username){
+            List<string> connectionIds;
+            lock(OnlineUsers){
+                connectionIds = OnlineUsers.GetValueOrDefault(username);
+            }
+
+            return Task.FromResult(connectionIds);
+
         }
     }
 }
