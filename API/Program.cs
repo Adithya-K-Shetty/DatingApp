@@ -64,6 +64,7 @@ app.UseAuthorization();  // should happen before mapping the controller
 app.MapControllers();
 
 app.MapHub<PresenceHub>("hubs/presence"); //providing end point for the hub
+app.MapHub<PresenceHub>("hubs/message");
 
 
 //provides access to all of the services defined above
