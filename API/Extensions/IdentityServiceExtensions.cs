@@ -36,10 +36,9 @@ namespace API.Extensions
                     ValidateAudience = false,
 
                 };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>{
-                        //access-token is the name used by signalR at the client side   
+                //authentication for signalR
+                options.Events = new JwtBearerEvents{
+                    OnMessageReceived = context=>{
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
 
@@ -47,7 +46,7 @@ namespace API.Extensions
                         {
                             context.Token = accessToken;
                         }
-                        return Task.CompletedTask;  
+                        return Task.CompletedTask;
                     }
                 };
             });

@@ -8,7 +8,7 @@ namespace API.interfaces
     {
         void Update(AppUser user);
         
-        Task<bool> SaveAllAsync();
+        
 
         //this fetches all the data
         //in which some of them are not displayed
@@ -24,5 +24,7 @@ namespace API.interfaces
         Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);
 
         Task<MemberDto> GetMemberAsync(string username);
+
+        Task<string> GetUserGender(string username);
     }
 }

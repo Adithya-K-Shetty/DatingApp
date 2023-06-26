@@ -27,7 +27,7 @@ namespace API.Extensions
             //and will be shared within that request
             services.AddScoped<ITokenService, TokenService>();
             //service will be scoped to the http request
-            services.AddScoped<IUserRepository,UserRepository>();
+            
 
             //object-to-object mapping library.
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -41,9 +41,8 @@ namespace API.Extensions
 
             services.AddScoped<LogUserActivity>();
 
-            services.AddScoped<ILikesRepository,LikesRepository>();
-
-            services.AddScoped<IMessageRepository,MessageRepository>();
+            services.AddScoped<IUnitOfWork,UnitOfWork>();
+            
 
             services.AddSignalR();
             

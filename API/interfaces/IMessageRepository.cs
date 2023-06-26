@@ -17,7 +17,7 @@ namespace API.interfaces
 
         Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName);
 
-        Task<bool> SaveAllAsync();
+        
 
 
         //methods for tracking of our group
